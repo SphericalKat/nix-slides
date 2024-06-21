@@ -235,7 +235,7 @@ Functions are first-class citizens in Nix, so you can assign them to variables, 
 transition: fade-out
 ---
 
-# More about sets
+# The Nix Expression Language
 
 ````md magic-move {lines: true}
 ```nix
@@ -296,6 +296,27 @@ in
 }
 ```
 
+```nix
+# The `import` function is used to import other Nix expressions:
+{
+    test = import ./test.nix;
+}
+```
+
+```nix
+# It's possible to access properties of imported expressions:
+{
+    test = import ./test.nix;
+    result = test.value;
+}
+```
+
+```nix
+# Expressions can be evaluated first using `()`
+{
+    result = (import ./test.nix).value;
+}
+```
 
 ````
 
@@ -310,3 +331,68 @@ in
 - `let` lets you bind some names and use them in the in block later, which is preferred to using a recursive set.
 
 </v-click>
+
+---
+transition: slide-up
+---
+# Derivations
+The Nix language is well and good, but what about the actual packages? That's where derivations come in.
+
+A derivation is a description of how to build a package. It includes the inputs, the build script, and the output path.
+
+````md magic-move {lines: true}
+
+```nix {*|5|3|*}
+derivation {
+  name = "simple";
+  builder = "${(import <nixpkgs> {}).bash}/bin/bash";
+  args = [ "-c" "echo foo > $out" ];
+  src = ./.; # Note the lack of quotes here. A path is a special type in Nix.
+  system = builtins.currentSystem;
+}
+```
+
+```nix
+with
+(import <nixpkgs> { });
+derivation
+{
+  name = "simple";
+  builder = "${bash}/bin/bash";
+  args = [ "-c" "echo foo > $out" ];
+  src = ./.;
+  system = builtins.currentSystem;
+}
+```
+
+````
+
+<!-- 
+There's a lot going on here, so before we try to do something with this file, let's make sure we understand what's going.
+
+We're calling a function named `derivation`, passing a set to it. The value for `name` is a string, the value for `args` is a list, the value for `src` is a path.
+
+`system` is set to `builtins.currentSystem`, which is a string that represents the current system double. It's a string like "x86_64-linux" or "aarch64-darwin".
+
+[click] `src` looks like a string, but it's actually a special type called a path. Paths are used to refer to files and directories on the filesystem. They're not strings, so they don't need quotes around them.
+
+[click] The nastiest part of the derivation is definitely this, though. Let's break it down:
+- `${(import <nixpkgs> {}).bash}`: This is a function call. It's calling the `import` function with the argument `<nixpkgs>`. This is a special path that refers to the Nixpkgs repository, which is a collection of Nix expressions that define packages.
+
+And so, if we follow logically, this must mean we build a string out of the "bash" property of whatever the result of calling import <nixpkgs> with an empty set gives us.
+
+Because, yeah, import <nixpkgs> evaluates to a lambda:
+
+So we must call it. But I strongly recommend not typing `import <nixpkgs> {}` in your REPL, because it'll evaluate everything in there. At the time of this writing, there's over 80K (eighty thousand) packages in there.
+
+Accessing a single field, though, is fine. So what we've learned is that nix has lazy evaluation. It doesn't evaluate things until it needs to. 
+
+[click:1] We can make this look a bit cleaner using `with`. Which to me at least, "adds a set to the local scope". If we do with `foo`, we can refer to any property of `foo` without doing `foo.property` - we can just do `property`.
+
+[click] So, what does this derivation do? It's a simple derivation that writes the string "foo" to a file named referred to by the environment variable `$out`. We can build it with `nix-build`:
+
+```
+nix-build simple.nix
+```
+
+ -->
