@@ -81,6 +81,7 @@ Emphasize reproducibility and why it's useful in software build systems and supp
 
 ---
 transition: slide-up
+title: What Is Nix?
 level: 2
 ---
 
@@ -102,23 +103,69 @@ How it helps in package management and system configuration.
  -->
 
 ---
-layout: two-cols
-layoutClass: gap-16
+transition: fade-out
 ---
 
-# Table of contents
+# nix-shell and the `/nix/store`
 
-You can use the `Toc` component to generate a table of contents for your slides:
+If you want to try out a package, you just can!
 
-```html
-<Toc minDepth="1" maxDepth="1"></Toc>
+## Features
+- **Temporary Environment**: Creates a temporary shell environment with the specified packages.
+- **Isolation**: Ensures that the environment is isolated from the host system. We can try it out!
+- **Immutable**: The nix store is immutable
+- **No conflicts**: A package's path is determined by its hash, so there are no conflicts. Either the paths are different due to different `inputs`, or the package is deduplicated.
+- **Garbage Collection**: The nix store is garbage collected, so you don't have to worry about disk space.
+
+<!-- 
+For example, cowsay isn't installed in my VM right now:
+```
+nix-shell -p cowsay
 ```
 
-The title will be inferred from your slide content, or you can override it with `title` and `level` in your frontmatter.
+How does that work? From that shell, let's find out where cowsay is in $PATH: 
+```
+which cowsay
+```
 
-::right::
+Let's find out exactly what cowsay refers to when running. It's not a dynamic executable, so I'll use strace to find out what it's doing:
+```
+strace cowsay "Moo" 2>&1 | grep --fixed-strings '"/'
 
-<Toc v-click minDepth="1" maxDepth="2"></Toc>
+```
+
+It refers almost exclusively to things under `/nix/store`! In fact, the only things it refers to that aren't under `/nix/store` are:
+```
+access("/etc/ld-nix.so.preload", R_OK)  = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/dev/urandom", O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/dev/urandom", O_RDONLY|O_CLOEXEC) = 3
+```
+
+`/nix/store` is immutable, by the way:
+```
+touch /nix/store/lqz6hmd86viw83f9qll2ip87jhb7p1ah-glibc-2.35-224/lib/libdl.so.2 
+```
+
+Also, what's that long hash about it? It's derived from the inputs, which means, paths either never clash (because they have different inputs), or they deduplicate.
+
+But also, you can have several versions of something and they won't conflict. In my little nix-shell, I already have two versions of glibc, for example
+
+```
+find /nix/store/*glibc*/ -name 'libdl.so'
+```
+
+This is all temporary though: if we exit out of our nix-shell with Ctrl-D, we can't execute cowsay anymore. Or can we?
+
+```
+/nix/store/azn0g0m6yg6m9vmdp3wq6wjbsd1znv44-cowsay-3.7.0/bin/cowsay "Look who's still here"
+```
+
+It does, until you garbage collect! 
+
+```
+nix-collect-garbage 
+```
+ -->
 
 ---
 layout: image-right
@@ -167,6 +214,10 @@ doubled.value = 2
 Notes can also sync with clicks
 
 [click] This will be highlighted after the first click
+
+More stuff
+
+Even more
 
 [click] Highlighted with `count = ref(0)`
 
