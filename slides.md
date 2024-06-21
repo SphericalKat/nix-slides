@@ -383,7 +383,7 @@ And so, if we follow logically, this must mean we build a string out of the "bas
 
 Because, yeah, import <nixpkgs> evaluates to a lambda:
 
-So we must call it. But I strongly recommend not typing `import <nixpkgs> {}` in your REPL, because it'll evaluate everything in there. At the time of this writing, there's over 80K (eighty thousand) packages in there.
+So we must call it. 
 
 Accessing a single field, though, is fine. So what we've learned is that nix has lazy evaluation. It doesn't evaluate things until it needs to. 
 
@@ -396,3 +396,54 @@ nix-build simple.nix
 ```
 
  -->
+
+---
+transition: fade-out
+image: image.png
+---
+# Attempting to evaluate all of nixpkgs
+Mmm, do you smell the smoke?
+
+<br />
+
+<div class="flex items-center w-full gap-4">
+<img src="/burning.gif" alt="burning" class="" />
+<img src="/tehc.png" alt="tehc" class="" />
+</div>
+
+
+<!-- 
+I strongly recommend not typing `import <nixpkgs> {}` in your REPL, because it'll evaluate everything in there. At the time of this writing, there's over 80K (eighty thousand) packages in there. Good thing they put in a warning for idiots like me.
+-->
+
+---
+transition: fade-out
+---
+
+# Nix Flakes
+
+Flakes are the unit for packaging Nix code in a reproducible and discoverable way.
+
+## Components
+- **Flake**: A Nix flake is a directory that contains a `flake.nix` file and other Nix expressions.
+- **Inputs**: Dependencies that your flake needs to build. They can be other flakes, binaries, source code files, or other resources.
+- **Outputs**: The artifacts your flake produces, such as packages, applications, or system configurations.
+
+## Benefits
+- **Discoverability**: Flakes make it easy to discover and use Nix packages and configurations. 
+- **Composability**: Flakes can have dependencies on other flakes, making it possible to have multi-repository Nix projects.
+- **Structure**: Flakes provide a structured way to organize your Nix code.
+
+<!-- 
+They can have dependencies on other flakes, making it possible to have multi-repository Nix projects.
+
+A flake is a filesystem tree (typically fetched from a Git repository or a tarball) that contains a file named `flake.nix` in the root directory. `flake.nix` specifies some metadata about the flake such as dependencies (called `inputs`), as well as its `outputs` (the Nix values such as packages or NixOS modules provided by the flake).
+ -->
+
+---
+transition: fade-out
+class: text-center
+---
+# Building our own flake
+
+Too big to fit on one slide, let's have a demo instead!
