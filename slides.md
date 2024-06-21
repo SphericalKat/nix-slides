@@ -51,12 +51,12 @@ transition: fade-out
 Nix is a powerful package manager and build system that provides reproducible and declarative environments for software development and deployment.
 
 ## Key Features
+
 - **Reproducibility**: Ensures that builds are identical regardless of the environment.
 - **Isolation**: Each package is stored in its own unique directory, preventing dependency conflicts.
 - **Declarative Configuration**: System configurations are described in a high-level, declarative manner.
 - **Rollbacks**: Easy to roll back to previous versions of packages or system configurations.
 - **Multi-user Support**: Allows multiple users to share the same system without interference.
-
 
 <!--
 You can have `style` tag in markdown to override the style for the current page.
@@ -86,17 +86,19 @@ level: 2
 ---
 
 ## How It Works
+
 - **Functional Approach**: Nix uses a purely functional approach to package management, meaning that the result of building a package depends only on its inputs.
 - **Store**: Packages are stored in the Nix store, typically located at `/nix/store`, with unique hashes.
-- **Derivations**: Packages are built from *derivations*, which are descriptions of how to build a package.
+- **Derivations**: Packages are built from _derivations_, which are descriptions of how to build a package.
 - **Expressions**: Packages and configurations are described using Nix expressions, written in the Nix Expression Language.
 
 ## Use Cases
+
 - **Development Environments**: Create isolated and reproducible development environments.
 - **Continuous Integration**: Ensure consistent builds across different CI environments.
 - **System Configuration**: Manage entire system configurations declaratively with NixOS.
 
-<!-- 
+<!--
 Explain a bit more about functional programming and how it's applied in Nix.
 Functional programming is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing-state and mutable data.
 How it helps in package management and system configuration.
@@ -111,19 +113,20 @@ transition: fade-out
 If you want to try out a package, you just can!
 
 ## Features
+
 - **Temporary Environment**: Creates a temporary shell environment with the specified packages.
 - **Isolation**: Ensures that the environment is isolated from the host system. We can try it out!
 - **Immutable**: The nix store is immutable
 - **No conflicts**: A package's path is determined by its hash, so there are no conflicts. Either the paths are different due to different `inputs`, or the package is deduplicated.
 - **Garbage Collection**: The nix store is garbage collected, so you don't have to worry about disk space.
 
-<!-- 
+<!--
 For example, cowsay isn't installed in my VM right now:
 ```
 nix-shell -p cowsay
 ```
 
-How does that work? From that shell, let's find out where cowsay is in $PATH: 
+How does that work? From that shell, let's find out where cowsay is in $PATH:
 ```
 which cowsay
 ```
@@ -143,7 +146,7 @@ openat(AT_FDCWD, "/dev/urandom", O_RDONLY|O_CLOEXEC) = 3
 
 `/nix/store` is immutable, by the way:
 ```
-touch /nix/store/lqz6hmd86viw83f9qll2ip87jhb7p1ah-glibc-2.35-224/lib/libdl.so.2 
+touch /nix/store/lqz6hmd86viw83f9qll2ip87jhb7p1ah-glibc-2.35-224/lib/libdl.so.2
 ```
 
 Also, what's that long hash about it? It's derived from the inputs, which means, paths either never clash (because they have different inputs), or they deduplicate.
@@ -160,10 +163,10 @@ This is all temporary though: if we exit out of our nix-shell with Ctrl-D, we ca
 /nix/store/azn0g0m6yg6m9vmdp3wq6wjbsd1znv44-cowsay-3.7.0/bin/cowsay "Look who's still here"
 ```
 
-It does, until you garbage collect! 
+It does, until you garbage collect!
 
 ```
-nix-collect-garbage 
+nix-collect-garbage
 ```
  -->
 
@@ -172,10 +175,12 @@ transition: fade-out
 ---
 
 # Installing packages with `nix profile`
+
 Similar to a traditional package manager, `nix profile` allows you to install packages globally.
 However, this is not the recommended way to use Nix, as it does not provide the same benefits as a declarative setup.
 
 ## Caveats
+
 - **Non-Reproducibility**: Difficult to ensure the same environment across different systems or over time.
 - **Complexity**: Managing state changes manually is error-prone and can lead to inconsistencies.
 - **Lack of Rollback**: Harder to revert to previous states without a clear record of changes.
@@ -196,75 +201,31 @@ Now this will survive garbage collection, but it's not recommended. Why? Because
 level: 2
 ---
 
-# Shiki Magic Move
+# The Nix Expression Language
 
-Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
+Nix has `sets`, which are like dictionaries in Python or objects in JavaScript.
 
-Add multiple code blocks and wrap them with <code>````md magic-move</code> (four backticks) to enable the magic move. For example:
-
-````md magic-move {lines: true}
-```ts {*|2|*}
-// step 1
-const author = reactive({
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-})
-```
-
-```ts {*|1-2|3-4|3-4,8}
-// step 2
-export default {
-  data() {
-    return {
-      author: {
-        name: 'John Doe',
-        books: [
-          'Vue 2 - Advanced Guide',
-          'Vue 3 - Basic Guide',
-          'Vue 4 - The Mystery'
-        ]
-      }
-    }
-  }
+```nix
+{
+  list =
+    [ 1 2 ] ++ [ 3 4 ];
+  a = 1;
+  b = 2;
 }
 ```
 
-```ts
-// step 3
-export default {
-  data: () => ({
-    author: {
-      name: 'John Doe',
-      books: [
-        'Vue 2 - Advanced Guide',
-        'Vue 3 - Basic Guide',
-        'Vue 4 - The Mystery'
-      ]
-    }
-  })
+And it has functions, which are called lambdas in some contexts:
+
+```nix
+x: x + 1
+```
+Functions are first-class citizens in Nix, so you can assign them to variables, pass them as arguments, and return them from other functions. (Note that one function can only take one argument but currying is possible.)
+```nix
+{
+    add = a: b: a + b;
+    sub = a: b: a - b;
 }
 ```
-
-Non-code blocks are ignored.
-
-```vue
-<!-- step 4 -->
-<script setup>
-const author = {
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-}
-</script>
-```
-````
 
 ---
 
@@ -309,8 +270,8 @@ Also, HTML elements are valid:
 -->
 
 ---
-class: px-20
----
+
+## class: px-20
 
 # Themes
 
@@ -467,7 +428,9 @@ LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
 Inline $\sqrt{3x-1}+(1+x)^2$
 
 Block
-$$ {1|3|all}
+
+$$
+{1|3|all}
 \begin{array}{c}
 
 \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
@@ -563,9 +526,11 @@ database "MySql" {
 [Learn More](https://sli.dev/guide/syntax.html#diagrams)
 
 ---
+
 foo: bar
 dragPos:
-  square: 691,32,167,_,-16
+square: 691,32,167,\_,-16
+
 ---
 
 # Draggable Elements
@@ -608,8 +573,10 @@ Double-click on the draggable elements to edit their positions.
 <v-drag-arrow pos="67,452,253,46" two-way op70 />
 
 ---
+
 src: ./pages/multiple-entries.md
 hide: false
+
 ---
 
 ---
@@ -621,26 +588,33 @@ Slidev provides built-in Monaco Editor support.
 Add `{monaco}` to the code block to turn it into an editor:
 
 ```ts {monaco}
-import { ref } from 'vue'
-import { emptyArray } from './external'
+import { ref } from "vue";
+import { emptyArray } from "./external";
 
-const arr = ref(emptyArray(10))
+const arr = ref(emptyArray(10));
 ```
 
 Use `{monaco-run}` to create an editor that can execute the code directly in the slide:
 
 ```ts {monaco-run}
-import { version } from 'vue'
-import { emptyArray, sayHello } from './external'
+import { version } from "vue";
+import { emptyArray, sayHello } from "./external";
 
-sayHello()
-console.log(`vue ${version}`)
-console.log(emptyArray<number>(10).reduce(fib => [...fib, fib.at(-1)! + fib.at(-2)!], [1, 1]))
+sayHello();
+console.log(`vue ${version}`);
+console.log(
+  emptyArray<number>(10).reduce(
+    (fib) => [...fib, fib.at(-1)! + fib.at(-2)!],
+    [1, 1]
+  )
+);
 ```
 
 ---
+
 layout: center
 class: text-center
+
 ---
 
 # Learn More
