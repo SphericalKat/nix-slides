@@ -266,4 +266,47 @@ in
 }
 ```
 
+```nix
+# Sets can be nested, so you can have a set of sets:
+{
+    inner = {
+        a = 1;
+        b = 2;
+    };
+}
+```
+
+```nix
+# You can access properties of a set using the `.` operator:
+{
+    inner = {
+        a = 1;
+        b = 2;
+    };
+    result = inner.a + inner.b;
+}
+```
+
+```nix
+# Shorthand for defining a nested set with properties:
+{
+    inner.a = 1;
+    inner.b = 2;
+    result = inner.a + inner.b;
+}
+```
+
+
 ````
+
+<v-click>
+
+## Summary
+
+- `()` are just like in C/Rust/whatever: they mean "evaluate that first"
+- `{}` defines a set/object/dictionary/key-value map. it has key = value; inside (each item ends with a semicolon)
+- `[]` defines a list/array: it has `1 2 3` inside (space-separated)
+- `foo.bar` accesses property `bar` of set `foo`
+- `let` lets you bind some names and use them in the in block later, which is preferred to using a recursive set.
+
+</v-click>
