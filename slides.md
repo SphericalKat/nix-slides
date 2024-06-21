@@ -168,60 +168,28 @@ nix-collect-garbage
  -->
 
 ---
-layout: image-right
-image: https://cover.sli.dev
+transition: fade-out
 ---
 
-# Code
+# Installing packages with `nix profile`
+Similar to a traditional package manager, `nix profile` allows you to install packages globally.
+However, this is not the recommended way to use Nix, as it does not provide the same benefits as a declarative setup.
 
-Use code snippets and get the highlighting directly, and even types hover![^1]
-
-```ts {all|5|7|7-8|10|all} twoslash
-// TwoSlash enables TypeScript hover information
-// and errors in markdown code blocks
-// More at https://shiki.style/packages/twoslash
-
-import { computed, ref } from 'vue'
-
-const count = ref(0)
-const doubled = computed(() => count.value * 2)
-
-doubled.value = 2
-```
-
-<arrow v-click="[4, 5]" x1="350" y1="310" x2="195" y2="334" color="#953" width="2" arrowSize="1" />
-
-<!-- This allow you to embed external code blocks -->
-<<< @/snippets/external.ts#snippet
-
-<!-- Footer -->
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
-
-<!-- Inline style -->
-<style>
-.footnotes-sep {
-  @apply mt-5 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
+## Caveats
+- **Non-Reproducibility**: Difficult to ensure the same environment across different systems or over time.
+- **Complexity**: Managing state changes manually is error-prone and can lead to inconsistencies.
+- **Lack of Rollback**: Harder to revert to previous states without a clear record of changes.
+- **System-Wide Consistency**: Profiles are user-specific and may lead to inconsistencies across different user environments.
 
 <!--
-Notes can also sync with clicks
+Explain the difference between using `nix profile` and a declarative setup.
 
-[click] This will be highlighted after the first click
+For example, installing cowsay with `nix profile`:
+```
+nix profile install 'nixpkgs#cowsay'
+```
 
-More stuff
-
-Even more
-
-[click] Highlighted with `count = ref(0)`
-
-[click:3] Last click (skip two clicks)
+Now this will survive garbage collection, but it's not recommended. Why? Because it's not declarative.
 -->
 
 ---
