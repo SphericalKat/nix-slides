@@ -278,7 +278,7 @@ in
 
 ```nix
 # You can access properties of a set using the `.` operator:
-{
+rec {
     inner = {
         a = 1;
         b = 2;
@@ -289,7 +289,7 @@ in
 
 ```nix
 # Shorthand for defining a nested set with properties:
-{
+rec {
     inner.a = 1;
     inner.b = 2;
     result = inner.a + inner.b;
@@ -305,7 +305,7 @@ in
 
 ```nix
 # It's possible to access properties of imported expressions:
-{
+rec {
     test = import ./test.nix;
     result = test.value;
 }
