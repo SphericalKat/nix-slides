@@ -44,6 +44,30 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 transition: fade-out
+layout: center
+---
+# Installation
+Follow the instructions at https://nixos.org/download/
+
+<br />
+
+### A little bit of config
+You can also copy it from <a href="https://katb.in/nix">katb.in/nix</a>
+
+```bash
+# add to ~/.config/nix/nix.conf
+experimental-features = nix-command flakes # shiny new features
+max-jobs = auto # just sets the number of threads to use
+```
+
+<style>
+    a {
+        color: var(--slidev-theme-primary);
+    }
+</style>
+
+---
+transition: fade-out
 ---
 
 # What Is Nix?
@@ -447,3 +471,20 @@ class: text-center
 # Building our own flake
 
 Too big to fit on one slide, let's have a demo instead!
+
+
+---
+transition: fade-out
+layout: center
+---
+# Managing packages using home-manager
+
+
+## Follow the commands at <a href="https://katb.in/nix-hm">katb.in/nix-hm</a>
+
+<style>
+a {
+    color: var(--slidev-theme-primary)
+}
+
+</style>
